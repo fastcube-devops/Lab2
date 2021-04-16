@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:ns12="http://www.tibco.com/schemas/Logging/Schemas/Schema.xsd" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:ns1="http://www.tibco.com/pe/EngineTypes">
+    <pd:name>ProcessDefinitions/lab2.process</pd:name>
+    <pd:startName>File listener</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings/>
+    <pd:starter name="File listener">
+        <pd:type>com.tibco.plugin.file.FileEventSource</pd:type>
+        <pd:resourceType>ae.activities.FileEventSourceResource</pd:resourceType>
+        <pd:x>67</pd:x>
+        <pd:y>221</pd:y>
+        <config>
+            <pollInterval>5</pollInterval>
+            <createEvent>true</createEvent>
+            <modifyEvent>false</modifyEvent>
+            <deleteEvent>false</deleteEvent>
+            <mode>files-and-directories</mode>
+            <encoding>text</encoding>
+            <sortby>File Name</sortby>
+            <sortorder>descending</sortorder>
+            <fileName>%%lab2/pathFolder%%</fileName>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endX>1009</pd:endX>
+    <pd:endY>93</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1618498916264</pd:targetNamespace>
+    <pd:activity name="init log">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>170</pd:x>
+        <pd:y>393</pd:y>
+        <config>
+            <processName>/ProcessDefinitions/LoggingProcess.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns12:LogInfo>
+                <ns12:idtech>
+                    <xsl:value-of select="concat(&quot;Lab2-&quot;,$_processContext/ns1:ProcessContext/ProcessId ,&quot;-&quot;, tib:timestamp())"/>
+                </ns12:idtech>
+                <ns12:idfonc>
+                    <xsl:value-of select="concat(&quot;Client-unkown-&quot;,tib:timestamp())"/>
+                </ns12:idfonc>
+                <ns12:status>
+                    <xsl:value-of select="&quot;initial&quot;"/>
+                </ns12:status>
+                <ns12:logmessage>
+                    <xsl:value-of select="concat(&quot;Start process  :  Lab2-&quot;,   $_processContext/ns1:ProcessContext/ProcessId)"/>
+                </ns12:logmessage>
+            </ns12:LogInfo>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="log success">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1230</pd:x>
+        <pd:y>109</pd:y>
+        <config>
+            <processName>/ProcessDefinitions/LoggingProcess.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns12:LogInfo>
+                <ns12:idtech>
+                    <xsl:value-of select="concat(&quot;Lab2-&quot;, $_processContext/ns1:ProcessContext/ProcessId ,&quot;-&quot;, tib:timestamp())"/>
+                </ns12:idtech>
+                <ns12:idfonc>
+                    <xsl:value-of select="concat(&quot;Client-&quot;,substring-before($Parse-File-name/Output/Rows/root[1]/id_client, &quot;.&quot;),&quot;-&quot;,tib:timestamp())"/>
+                </ns12:idfonc>
+                <ns12:status>
+                    <xsl:value-of select="&quot;Success&quot;"/>
+                </ns12:status>
+                <ns12:logmessage>
+                    <xsl:value-of select="concat(&quot;End of process  :  Lab2-&quot;,   $_processContext/ns1:ProcessContext/ProcessId)"/>
+                </ns12:logmessage>
+            </ns12:LogInfo>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Move to target">
+        <pd:type>com.tibco.plugin.file.FileRenameActivity</pd:type>
+        <pd:resourceType>ae.activities.FileRenameActivity</pd:resourceType>
+        <pd:x>657</pd:x>
+        <pd:y>89</pd:y>
+        <config>
+            <overwrite>true</overwrite>
+        </config>
+        <pd:inputBindings>
+            <pfx:RenameActivityConfig>
+                <fromFileName>
+                    <xsl:value-of select="$File-listener/pfx:EventSourceOuputTextClass/fileInfo/fullName"/>
+                </fromFileName>
+                <toFileName>
+                    <xsl:value-of select="concat(&#xA;&#x9;$_globalVariables/ns:GlobalVariables/lab2/target, &#xA;&#x9;substring-before($File-listener/pfx:EventSourceOuputTextClass/fileInfo/fileName,&quot;.&quot;),&#xA;&#x9;&quot;_moved.&quot;,&#xA;&#x9;substring-after($File-listener/pfx:EventSourceOuputTextClass/fileInfo/fileName,&quot;.&quot;)&#xA;)"/>
+                </toFileName>
+            </pfx:RenameActivityConfig>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Move to error">
+        <pd:type>com.tibco.plugin.file.FileRenameActivity</pd:type>
+        <pd:resourceType>ae.activities.FileRenameActivity</pd:resourceType>
+        <pd:x>662</pd:x>
+        <pd:y>219</pd:y>
+        <config>
+            <overwrite>true</overwrite>
+        </config>
+        <pd:inputBindings>
+            <pfx:RenameActivityConfig>
+                <fromFileName>
+                    <xsl:value-of select="$File-listener/pfx:EventSourceOuputTextClass/fileInfo/fullName"/>
+                </fromFileName>
+                <toFileName>
+                    <xsl:value-of select="concat($_globalVariables/ns:GlobalVariables/lab2/error, $File-listener/pfx:EventSourceOuputTextClass/fileInfo/fileName)"/>
+                </toFileName>
+            </pfx:RenameActivityConfig>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Parse File name">
+        <pd:type>com.tibco.plugin.parse.ParseActivity</pd:type>
+        <pd:resourceType>ae.activities.ParseActivity</pd:resourceType>
+        <pd:x>343</pd:x>
+        <pd:y>219</pd:y>
+        <config>
+            <InputType>String</InputType>
+            <Encoding>ASCII</Encoding>
+            <ParseSharedConfig>/Ressources/FormatNom.sharedparse</ParseSharedConfig>
+            <ContinueonError>true</ContinueonError>
+        </config>
+        <pd:inputBindings>
+            <Input>
+                <text>
+                    <xsl:value-of select="$File-listener/pfx:EventSourceOuputTextClass/fileInfo/fileName"/>
+                </text>
+                <noOfRecords>
+                    <xsl:value-of select="1"/>
+                </noOfRecords>
+            </Input>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="log error format incorrect">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1224</pd:x>
+        <pd:y>311</pd:y>
+        <config>
+            <processName>/ProcessDefinitions/LoggingProcess.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns12:LogInfo>
+                <ns12:idtech>
+                    <xsl:value-of select="concat(&quot;Lab2- &quot;,$_processContext/ns1:ProcessContext/ProcessId ,&quot; - &quot;, tib:timestamp())"/>
+                </ns12:idtech>
+                <ns12:idfonc>
+                    <xsl:value-of select="concat(&quot;Client-&quot;,substring-before($Parse-File-name/Output/Rows/root[1]/id_client,&quot;.&quot;),&quot;-&quot;,tib:timestamp())"/>
+                </ns12:idfonc>
+                <ns12:status>
+                    <xsl:value-of select="&quot;error&quot;"/>
+                </ns12:status>
+                <ns12:logmessage>
+                    <xsl:value-of select="&quot;Incorrect file name format &quot;"/>
+                </ns12:logmessage>
+            </ns12:LogInfo>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Error incorrect file format">
+        <pd:type>com.tibco.pe.core.GenerateErrorActivity</pd:type>
+        <pd:resourceType>ae.activities.throw</pd:resourceType>
+        <pd:x>665</pd:x>
+        <pd:y>355</pd:y>
+        <config>
+            <faultName/>
+        </config>
+        <pd:inputBindings>
+            <ns2:ActivityInput>
+                <message>
+                    <xsl:value-of select="&quot;Incorrect file name format&quot;"/>
+                </message>
+            </ns2:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>1007</pd:x>
+        <pd:y>247</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>File listener</pd:from>
+        <pd:to>Parse File name</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Parse File name</pd:from>
+        <pd:to>Move to target</pd:to>
+        <pd:xpathDescription>correct file name format</pd:xpathDescription>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>empty($Parse-File-name/Output/ErrorRows/ErrorString) and 
+tib:validate-dateTime("ddMMyyyy", $Parse-File-name/Output/Rows/root[1]/date_ajout) and
+number(substring-before($Parse-File-name/Output/Rows/root[1]/id_client, "."))!="NaN" and
+string-length(substring-before($Parse-File-name/Output/Rows/root[1]/id_client, "."))=
+string-length(number(substring-before($Parse-File-name/Output/Rows/root[1]/id_client, ".")))</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Parse File name</pd:from>
+        <pd:to>Move to error</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Move to target</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Move to error</pd:from>
+        <pd:to>Error incorrect file format</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

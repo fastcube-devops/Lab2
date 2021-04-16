@@ -1,0 +1,29 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<repository xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns = "http://www.tibco.com/xmlns/repo/types/2002">
+	<globalVariables>
+		<globalVariable>
+			<name>error</name>
+			<value>C:\Users\Dev\Documents\repos\Lab2\error\</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1618566398626</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>pathFolder</name>
+			<value>C:\Users\Dev\Documents\repos\Lab1\csv\*.csv</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1618566717084</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>target</name>
+			<value>C:\Users\Dev\Documents\repos\Lab2\target\</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1618566424727</modTime>
+		</globalVariable>
+	</globalVariables>
+</repository>
