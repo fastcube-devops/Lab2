@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:ns12="http://www.tibco.com/schemas/Logging/Schemas/Schema.xsd" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:ns1="http://www.tibco.com/pe/EngineTypes">
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:ns12="http://www.tibco.com/schemas/Logging/Schemas/Schema.xsd" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <pd:name>ProcessDefinitions/lab2.process</pd:name>
     <pd:startName>File listener</pd:startName>
     <pd:startX>0</pd:startX>
@@ -15,7 +15,7 @@
             <createEvent>true</createEvent>
             <modifyEvent>false</modifyEvent>
             <deleteEvent>false</deleteEvent>
-            <mode>files-and-directories</mode>
+            <mode>only-files</mode>
             <encoding>text</encoding>
             <sortby>File Name</sortby>
             <sortorder>descending</sortorder>
@@ -24,16 +24,16 @@
         <pd:inputBindings/>
     </pd:starter>
     <pd:endName>End</pd:endName>
-    <pd:endX>1009</pd:endX>
-    <pd:endY>93</pd:endY>
+    <pd:endX>1138</pd:endX>
+    <pd:endY>87</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables/>
     <pd:targetNamespace>http://xmlns.example.com/1618498916264</pd:targetNamespace>
     <pd:activity name="init log">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>170</pd:x>
-        <pd:y>393</pd:y>
+        <pd:x>202</pd:x>
+        <pd:y>220</pd:y>
         <config>
             <processName>/ProcessDefinitions/LoggingProcess.process</processName>
         </config>
@@ -51,14 +51,17 @@
                 <ns12:logmessage>
                     <xsl:value-of select="concat(&quot;Start process  :  Lab2-&quot;,   $_processContext/ns1:ProcessContext/ProcessId)"/>
                 </ns12:logmessage>
+                <ns12:idProcess>
+                    <xsl:value-of select="$_processContext/ns1:ProcessContext/ProcessId"/>
+                </ns12:idProcess>
             </ns12:LogInfo>
         </pd:inputBindings>
     </pd:activity>
     <pd:activity name="log success">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>1230</pd:x>
-        <pd:y>109</pd:y>
+        <pd:x>978</pd:x>
+        <pd:y>88</pd:y>
         <config>
             <processName>/ProcessDefinitions/LoggingProcess.process</processName>
         </config>
@@ -76,6 +79,9 @@
                 <ns12:logmessage>
                     <xsl:value-of select="concat(&quot;End of process  :  Lab2-&quot;,   $_processContext/ns1:ProcessContext/ProcessId)"/>
                 </ns12:logmessage>
+                <ns12:idProcess>
+                    <xsl:value-of select="$_processContext/ns1:ProcessContext/ProcessId"/>
+                </ns12:idProcess>
             </ns12:LogInfo>
         </pd:inputBindings>
     </pd:activity>
@@ -120,7 +126,7 @@
     <pd:activity name="Parse File name">
         <pd:type>com.tibco.plugin.parse.ParseActivity</pd:type>
         <pd:resourceType>ae.activities.ParseActivity</pd:resourceType>
-        <pd:x>343</pd:x>
+        <pd:x>342</pd:x>
         <pd:y>219</pd:y>
         <config>
             <InputType>String</InputType>
@@ -142,8 +148,8 @@
     <pd:activity name="log error format incorrect">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>1224</pd:x>
-        <pd:y>311</pd:y>
+        <pd:x>1135</pd:x>
+        <pd:y>249</pd:y>
         <config>
             <processName>/ProcessDefinitions/LoggingProcess.process</processName>
         </config>
@@ -159,8 +165,11 @@
                     <xsl:value-of select="&quot;error&quot;"/>
                 </ns12:status>
                 <ns12:logmessage>
-                    <xsl:value-of select="&quot;Incorrect file name format &quot;"/>
+                    <xsl:value-of select="if(string-length( $Catch/exceptiondata/*)>254) then substring($Catch/exceptiondata/*, 1, 254) else $Catch/exceptiondata/*"/>
                 </ns12:logmessage>
+                <ns12:idProcess>
+                    <xsl:value-of select="$_processContext/ns1:ProcessContext/ProcessId"/>
+                </ns12:idProcess>
             </ns12:LogInfo>
         </pd:inputBindings>
     </pd:activity>
@@ -183,17 +192,66 @@
     <pd:activity name="Catch">
         <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
         <pd:resourceType>ae.activities.catch</pd:resourceType>
-        <pd:x>1007</pd:x>
-        <pd:y>247</pd:y>
+        <pd:x>972</pd:x>
+        <pd:y>242</pd:y>
         <pd:handler>true</pd:handler>
         <config>
             <catchAll>true</catchAll>
         </config>
         <pd:inputBindings/>
     </pd:activity>
+    <pd:activity name="Update DB">
+        <pd:type>com.tibco.plugin.jdbc.JDBCUpdateActivity</pd:type>
+        <pd:resourceType>ae.activities.JDBCUpdateActivity</pd:resourceType>
+        <pd:x>832</pd:x>
+        <pd:y>88</pd:y>
+        <config>
+            <timeout>10</timeout>
+            <commit>false</commit>
+            <emptyStrAsNil>false</emptyStrAsNil>
+            <jdbcSharedConfig>/Connections/DB_Connection.sharedjdbc</jdbcSharedConfig>
+            <statement>update clients
+set nom_fichier=?, date_update=?
+where id_client=?</statement>
+            <Prepared_Param_DataType>
+                <parameter>
+                    <parameterName>nom_fichier</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>date_update</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+                <parameter>
+                    <parameterName>id_client</parameterName>
+                    <dataType>VARCHAR</dataType>
+                </parameter>
+            </Prepared_Param_DataType>
+        </config>
+        <pd:inputBindings>
+            <jdbcUpdateActivityInput>
+                <nom_fichier>
+                    <xsl:value-of select="$Move-to-target/pfx:RenameActivityOutput/fileInfo/fullName"/>
+                </nom_fichier>
+                <date_update>
+                    <xsl:value-of select="tib:timestamp()"/>
+                </date_update>
+                <id_client>
+                    <xsl:choose>
+                        <xsl:when test="exists(substring-before($Parse-File-name/Output/Rows/root[1]/id_client, &quot;.&quot;))">
+                            <xsl:value-of select="substring-before($Parse-File-name/Output/Rows/root[1]/id_client, &quot;.&quot;)"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="xsi:nil">true</xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </id_client>
+            </jdbcUpdateActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
     <pd:transition>
         <pd:from>File listener</pd:from>
-        <pd:to>Parse File name</pd:to>
+        <pd:to>init log</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -220,8 +278,8 @@ string-length(number(substring-before($Parse-File-name/Output/Rows/root[1]/id_cl
     </pd:transition>
     <pd:transition>
         <pd:from>Move to target</pd:from>
-        <pd:to>End</pd:to>
-        <pd:lineType>Multiple Bends</pd:lineType>
+        <pd:to>Update DB</pd:to>
+        <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
@@ -234,6 +292,34 @@ string-length(number(substring-before($Parse-File-name/Output/Rows/root[1]/id_cl
     </pd:transition>
     <pd:transition>
         <pd:from>Catch</pd:from>
+        <pd:to>log error format incorrect</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Update DB</pd:from>
+        <pd:to>log success</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>init log</pd:from>
+        <pd:to>Parse File name</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>log error format incorrect</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>log success</pd:from>
         <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
