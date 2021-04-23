@@ -145,11 +145,11 @@
             </Input>
         </pd:inputBindings>
     </pd:activity>
-    <pd:activity name="log error format incorrect">
+    <pd:activity name="log error">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>1135</pd:x>
-        <pd:y>249</pd:y>
+        <pd:x>1137</pd:x>
+        <pd:y>241</pd:y>
         <config>
             <processName>/ProcessDefinitions/LoggingProcess.process</processName>
         </config>
@@ -165,7 +165,7 @@
                     <xsl:value-of select="&quot;error&quot;"/>
                 </ns12:status>
                 <ns12:logmessage>
-                    <xsl:value-of select="if(string-length( $Catch/exceptiondata/*)>254) then substring($Catch/exceptiondata/*, 1, 254) else $Catch/exceptiondata/*"/>
+                    <xsl:value-of select="$Catch/exceptiondata/*"/>
                 </ns12:logmessage>
                 <ns12:idProcess>
                     <xsl:value-of select="$_processContext/ns1:ProcessContext/ProcessId"/>
@@ -292,7 +292,7 @@ string-length(number(substring-before($Parse-File-name/Output/Rows/root[1]/id_cl
     </pd:transition>
     <pd:transition>
         <pd:from>Catch</pd:from>
-        <pd:to>log error format incorrect</pd:to>
+        <pd:to>log error</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -312,7 +312,7 @@ string-length(number(substring-before($Parse-File-name/Output/Rows/root[1]/id_cl
         <pd:conditionType>always</pd:conditionType>
     </pd:transition>
     <pd:transition>
-        <pd:from>log error format incorrect</pd:from>
+        <pd:from>log error</pd:from>
         <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
