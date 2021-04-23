@@ -153,7 +153,7 @@ where id_client=?</statement>
     <pd:activity name="Log init">
         <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
         <pd:resourceType>ae.process.subprocess</pd:resourceType>
-        <pd:x>142</pd:x>
+        <pd:x>140</pd:x>
         <pd:y>82</pd:y>
         <config>
             <processName>/ProcessDefinitions/Logging.process</processName>
@@ -167,10 +167,10 @@ where id_client=?</statement>
                     <xsl:value-of select="'unkown'"/>
                 </ns3:idfonc>
                 <ns3:status>
-                    <xsl:value-of select="'init'"/>
+                    <xsl:value-of select="'initial'"/>
                 </ns3:status>
                 <ns3:logmessage>
-                    <xsl:value-of select="'init'"/>
+                    <xsl:value-of select="concat('process initial with id: ',$_processContext/ns2:ProcessContext/ProcessId)"/>
                 </ns3:logmessage>
             </ns3:LogInfo>
         </pd:inputBindings>
@@ -327,6 +327,56 @@ where id_client=?</statement>
             </ns3:LogInfo>
         </pd:inputBindings>
     </pd:activity>
+    <pd:activity name="right name">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>856</pd:x>
+        <pd:y>256</pd:y>
+        <config>
+            <processName>/ProcessDefinitions/Logging.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns3:LogInfo>
+                <ns3:idtech>
+                    <xsl:value-of select="$_processContext/ns2:ProcessContext/ProcessId"/>
+                </ns3:idtech>
+                <ns3:idfonc>
+                    <xsl:value-of select="concat('id client:', number( substring-before( tib:substring-after-last($File-Poller/ns:EventSourceOuputTextClass/fileInfo/fileName ,&quot;_&quot;), &quot;.&quot;)))"/>
+                </ns3:idfonc>
+                <ns3:status>
+                    <xsl:value-of select="'Success'"/>
+                </ns3:status>
+                <ns3:logmessage>
+                    <xsl:value-of select="'Proccess executed with success'"/>
+                </ns3:logmessage>
+            </ns3:LogInfo>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="bad name">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>853</pd:x>
+        <pd:y>173</pd:y>
+        <config>
+            <processName>/ProcessDefinitions/Logging.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ns3:LogInfo>
+                <ns3:idtech>
+                    <xsl:value-of select="$_processContext/ns2:ProcessContext/ProcessId"/>
+                </ns3:idtech>
+                <ns3:idfonc>
+                    <xsl:value-of select="'unkown'"/>
+                </ns3:idfonc>
+                <ns3:status>
+                    <xsl:value-of select="'Success'"/>
+                </ns3:status>
+                <ns3:logmessage>
+                    <xsl:value-of select="'Process executed with success'"/>
+                </ns3:logmessage>
+            </ns3:LogInfo>
+        </pd:inputBindings>
+    </pd:activity>
     <pd:transition>
         <pd:from>File Poller</pd:from>
         <pd:to>Log init</pd:to>
@@ -365,10 +415,11 @@ where id_client=?</statement>
     </pd:transition>
     <pd:transition>
         <pd:from>Remove File</pd:from>
-        <pd:to>End</pd:to>
+        <pd:to>right name</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
-        <pd:conditionType>always</pd:conditionType>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$Map-Data/FileName='Accepte'</pd:xpath>
     </pd:transition>
     <pd:transition>
         <pd:from>Copy File</pd:from>
@@ -436,6 +487,29 @@ where id_client=?</statement>
     </pd:transition>
     <pd:transition>
         <pd:from>Logging-1-1</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>right name</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Remove File</pd:from>
+        <pd:to>bad name</pd:to>
+        <pd:xpathDescription/>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$Map-Data/FileName='Reject'</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>bad name</pd:from>
         <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>

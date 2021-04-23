@@ -10,11 +10,11 @@
             <authorProperty>Dev</authorProperty>
             <processProperty>/ProcessDefinitions/Verify_name_file.process</processProperty>
         </processArchive>
-        <versionProperty>3</versionProperty>
+        <versionProperty>4</versionProperty>
         <authorProperty>Dev</authorProperty>
-        <addServiceSettableGvars>true</addServiceSettableGvars>
+        <addServiceSettableGvars>false</addServiceSettableGvars>
         <name>lab2</name>
         <designer/>
-        <fileLocationProperty>C:\Users\Dev\lab2.ear</fileLocationProperty>
+        <fileLocationProperty>C:\Users\Dev\Documents\lab2.ear</fileLocationProperty>
     </enterpriseArchive>
 </Repository:repository>
